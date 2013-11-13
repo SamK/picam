@@ -1,0 +1,17 @@
+#!/bin/bash
+IP="192.168.4.50 192.168.4.51"
+  for ip in $IP; do
+    ping -c 1 -w 1 $ip > /dev/null
+    r=$?
+    if [[ "$r" == "0" ]]; then
+      # The IP $ip is present. No need to enable
+      echo "IP address $ip is present."
+ exit 0
+    else
+      echo "IP address $ip NOT present"
+    fi
+  done
+  echo "No family at home"
+exit 1
+
+

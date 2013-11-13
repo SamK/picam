@@ -1,0 +1,116 @@
+#!/bin/bash
+url="http://localhost:8080/0/"
+#set -u
+
+motion_status() {
+  http_content=$(wget -q -O - ${url}detection/status)
+  wget_code=$?
+  if [ "$wget_code" == "4" ]; then
+    echo STOPPED
+    return 4
+  elif  echo $http_content | grep --silent ACTIVE ; then
+    echo ACTIVE
+    return 0
+  elif  echo $http_content | grep --silent PAUSE ; then
+    echo PAUSE
+    return 1
+  fi
+  echo "UNKNOWN : $wget_code ($http_content)"
+  return 2
+}
+
+is_status_active() {
+  motion_status > /dev/null && return 0
+  return 1
+}
+is_status_pause() {
+  motion_status > /dev/null
+  [ "$?" == "1" ] && return 0
+}
+
+motion_pause () {
+  echo "Pausing detection"
+  wget -q -O /dev/null ${url}detection/pause
+}
+motion_start() {
+  echo "Resuming detection"
+  wget -q -O /dev/null ${url}detection/start
+}
+
+
+set_config () {
+  link="${url}config/set?$1=$2"
+  wget -O - $link
+}
+
+display_help(){
+echo "
+$0
+
+Arguments:
+
+start|resume|on
+    resume motion detection
+
+stop|pause|off|stop
+    pause motion dedection
+
+status
+    display current status:
+        ACTIVE  (exit code 0)
+        PAUSE   (exit code 1)
+        UNKNOWN (exit code 2)
+
+-h|--help
+    show this help
+"
+}
+
+function parse_arguments () {
+
+if [ "$#" == "0" ]; then
+  echo "Arguments needed"
+  display_help
+  exit 1
+fi
+
+while [[ $1 ]]
+do
+  case "$1" in
+    "start" | "resume" | "on")
+      motion_start
+      shift
+      ;;
+    "pause" | "disable" | "off" | "stop")
+      motion_pause
+      shift
+      ;;
+    "status")
+      motion_status
+      exit $?
+      shift
+      ;;
+      -h | --help)
+	  display_help  # Call your function
+	  # no shifting needed here, we're done.
+	  exit 0
+	  ;;
+      --) # End of all options
+	  shift
+	  break;
+         ;;
+      *)
+	  echo "Error: Unknown option: $1" >&2
+	  exit 1
+	  ;;
+    esac
+done
+
+}
+
+function main() {
+  parse_arguments $*
+}
+
+main $*
+

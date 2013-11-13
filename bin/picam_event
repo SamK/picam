@@ -1,0 +1,201 @@
+#!/bin/bash
+#set -o nounset
+PATH=/usr/local/bin:$PATH
+# The current directory
+SCRIPTNAME=$(basename $0)
+TMPFILE="/tmp/${SCRIPTNAME}-$$.tmp"
+source /etc/picam.conf
+
+##################
+# system functions
+##################
+
+function echov(){
+    # print if VERBOSE > 0
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 0 ]; then
+        echo "[${0}] $*"
+    fi
+}
+
+########################
+# notification fonctions
+########################
+
+send_message() {
+    # send a common email
+    event_id=$1
+    message=$*
+    subject="[motion] pvent $event_id"
+    echov ">> $SCRIPTNAME.send_message :: subject: $subject"
+    echo $* > $TMPFILE
+    picam_notify -m $TMPFILE --subject "$subject"
+    /bin/rm "$TMPFILE"
+}
+
+message_event_start() {
+    # send an email when event starts
+    echo -e "fvent $1 started.\nMessage: $*" > $TMPFILE
+    picam_notify -m $TMPFILE --subject "[motion] jvent $1" -f "$image"
+    /bin/rm $TMPFILE
+}
+
+message_movie_end() {
+    # send an email when a movie ends
+    echov ">> $SCRIPTNAME.message_movie_end $*"
+    event_id=$1
+    event_date=$2
+    file=$3
+
+    echo "New movie!
+kvent $event_id-$event_date
+File: $3
+https://www.dropbox.com/home/Applications/campi
+https://www.dropbox.com/home/Applications/campi/$(basename $3)
+" > $TMPFILE
+    picam_notify -m $TMPFILE --subject "[motion] lvent $1"
+    /bin/rm "$TMPFILE"
+}
+
+message_event_end() {
+    # send a message when the event ends
+    event_id=$1
+    event_date=$2
+    echov ">> $SCRIPTNAME.message_event_end $*"
+    echo -e "mvent $event_id-$event_date ended\nMessage: $*" > $TMPFILE
+    picam_notify -m $TMPFILE --subject "[motion] nvent $event_id"
+    /bin/rm $TMPFILE
+}
+
+message_picture_save() {
+    # send a message when a picture is saved
+    # 1 event id
+    # 2 event date
+    # 3 image file
+    image="$3"
+    echov ">> $SCRIPTNAME.message_picture_save $*"
+    txt=/tmp/$SCRIPTNAME.message_picture_save
+    echo -e "New image for event $1-$2\nArguments: $*" > $txt
+    picam_notify -m $txt --subject "[motion] ovent $1" -f "$image"
+    /bin/rm "$txt"
+}
+
+################
+# file functions
+################
+
+upload() {
+    # upload a file
+    # 1 file
+      file=$1
+    echov ">> $SCRIPTNAME.upload $*"
+    dropbox_uploader.sh upload $file $(basename $file)
+    if [ "$?" == "0" ]; then
+        # the upload is good: remove the local file
+        /bin/rm "$file"
+        echov ">>> uploaded file $(basename $file)"
+        return 0
+    fi
+    # the upload failed: notify the user
+    msg="Failed to upload \"$file\""
+    echo $msg
+    send_message 0 $msg
+    return 1
+}
+
+################
+# user functions
+################
+
+display_help() {
+    # dispaly the help for the user
+    echo $SCRIPTNAME ' event_type [text_event] [file]'
+    echo "the event types are the following:
+        event_start
+        event_end
+        movie_start
+        movie_end
+        picture_save"
+}
+
+parse_arguments() {
+    # parse the arguments (and execute the appropriate action)
+    # $1 event
+    # $2 event_id
+    # $3 event_text
+    # $4 file
+
+    if [ -z $1 ] ; then
+        # the user did not provide an argument
+        # print some help and exit with error
+        echo "Error: argument needed"
+        display_help
+        exit 1
+    fi
+
+    while [[ $1 ]]; do
+        case "$1" in
+            "event_start")
+                send_message $2 "New event detected: event #$2. More coming later"
+                exit 0
+                ;;
+            "event_end")
+                message_event_end $2 $3
+                exit $?
+                ;;
+            "movie_start")
+                echo "movie_start $*"
+                exit 0
+                ;;
+            "movie_end")
+                message_movie_end $2 $3 $4
+                upload $4
+                exit $r
+                ;;
+            "picture_save")
+                message_picture_save $2 $3 $4
+                upload $4
+                exit 0
+                ;;
+            -h | --help)
+                display_help  # Call your function
+                # no shifting needed here, we're done.
+                exit 0
+                ;;
+            --) # End of all options
+                shift
+                break;
+                ;;
+            *)
+                echo "Error: Unknown option: \"$1\"" >&2
+                display_help  # Call your function
+                exit 1
+                ;;
+        esac
+    done
+}
+
+main () {
+    # this is where everything starts
+    echo '> ('"$USER"'): '"$0 $*"
+    parse_arguments $*
+}
+
+##############
+# main start
+##############
+
+if tty -s; then
+    # there is a tty. That means the command is
+    # executed manually by the user
+    main $*
+else
+    # there is no tty. That means the command is
+    # executed automatically by motion
+    # therefore, the output is sent to syslog
+    main $* 2>&1 | logger -t picam_event
+fi
+
+exit 0

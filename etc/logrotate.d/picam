@@ -1,0 +1,16 @@
+/var/log/picam_event.log {
+  rotate 12
+  monthly
+  compress
+  missingok
+  notifempty
+}
+
+/var/log/motion_supervise.log {
+  rotate 12
+  monthly
+  compress
+  missingok
+  notifempty
+}
+

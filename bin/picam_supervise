@@ -1,0 +1,113 @@
+#!/bin/bash
+#set -o nounset
+SCRIPT_NAME=($basename $0)
+source /etc/picam.conf
+
+##################
+# system functions
+##################
+
+function echov() {
+    # print if VERBOSE > 0
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 0 ]; then
+        echo "$*"
+    fi
+}
+
+#################
+# query functions
+#################
+
+is_secured() {
+    # determine if friendly presence is here
+    $CHECK_SECURE_COMMAND
+    r=$?
+    echo "The check secure command \"${CHECK_SECURE_COMMAND}\" returned code $r"
+    return $r
+}
+
+control() {
+    # controls motion based on presence
+    is_secured
+    TMPFILE="/tmp/${SCRIPTNAME}-${$}-control.tmp"
+    code1=$?
+    status=$(motion_control status)
+    code2=$?
+
+    echo monitoring presence...
+    if [[ "$code1" == "0" ]] && [[ "$code2" == "0" ]]; then
+        echo "# there is presence and motion is active ($status); then pause it"
+        motion_control pause
+    elif [[ $code1 != "0" ]] && [ "$code2" == "1" ]; then
+        echo "# there is nobody and motion is not active ($status), then start it"
+        motion_control start
+    elif [[ $code2 == "2" ]]; then
+        echo "Motion is in status $status. Sending warning."
+        echo "Motion is in status $status. This is a warning." > $TMPFILE
+        picam_notify --message $TMPFILE --subject "[motion] Warning. Unresponsive security!"
+        /bin/rm "$TMPFILE"
+    elif [[ $code2 == "4" ]]; then
+        echo "Motion seems stopped. Sending warning."
+        echo "Motion seems stopped. This is a warning." > $TMPFILE
+        picam_notify -message $TMPFILE --subject "[motion] Warning. Unresponsive security!"
+        /bin/rm "$TMPFILE"
+    else
+        echo "Keeping state $status"
+    fi
+}
+
+display_help() {
+    echo "$( basename $0 ) [--verbose] <action>
+
+    where <action> can be one of the followings:
+
+    presence     test friendly presence
+    control      search presence. enable if presence, disable if not"
+}
+
+function parse_arguments() {
+    if [ -z $1 ]; then
+        echo "Argument needed"
+        display_help
+        exit 127
+    fi
+
+    while [[ $1 ]]; do
+        case "$1" in
+            "presence")
+                is_presence
+                exit $?
+                ;;
+            "control")
+                control
+                exit $?
+                ;;
+            -v | --verbose)
+                VERBOSE=1
+                shift
+                ;;
+            -h | --help)
+                display_help  # Call your function
+                # no shifting needed here, we're done.
+                exit 0
+                ;;
+            --) # End of all options
+                shift
+                break;
+                ;;
+            *)
+                echo "Error: Unknown option: $1" >&2
+                exit 1
+                ;;
+        esac
+    done
+}
+
+function main() {
+    parse_arguments $*
+}
+
+main $*

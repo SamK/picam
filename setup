@@ -1,0 +1,159 @@
+#!/bin/bash
+set -e
+
+#########################
+# Configuration variables
+#########################
+
+# the location of the bin directory
+BIN_DIR="/usr/local/bin"
+
+# Nothing to touch below
+
+CP="/bin/cp"
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+FORCE="no"
+
+ETC_FILES="picam.conf cron.d/picam rsyslog.d/picam.conf logrotate.d/picam"
+
+BIN_FILES="motion_control picam_event picam_supervise picam_notify"
+
+############
+# root check
+############
+
+if [[ $UID -ne 0 ]]; then
+    echo "You must be root to do this." 1>&2
+    exit 1
+fi
+
+###########
+# Functions
+###########
+
+function inst_bin() {
+	# install an executable into the BIN_DIR folder
+    echo "Installing ${BIN_DIR}/${1}"
+	$CP -f "./bin/${1}" ${BIN_DIR}/${1}
+}
+
+function inst_etc() {
+    # install a configuration file
+    # does not overwrite unless FORCE=="yes"
+    [ -f /etc/${1} ] &&  [ "$FORCE" != "yes" ] && echo "File \"/etc/${1}\" already exists" && return 0
+    echo "Installing /etc/${1}"
+    $CP -f "./etc/${1}" "/etc/${1}"
+    RELOAD_SERVICES="yes"
+}
+
+function do_uninstall () {
+    # remove binaries
+	for f in $BIN_FILES; do
+		"Removing ${BIN_DIR}/${f}"
+		/bin/rm "${BIN_DIR}/${f}"
+	done
+}
+function do_purge() {
+    # remove configuration files and binaries
+
+	for f in $ETC_FILES; do
+		echo "Removing /etc/${f}"
+		/bin/rm /etc/${f}
+	done
+
+    do_uninstall
+
+    echo "Restarting rsyslog"
+	service rsyslog restart
+
+}
+function do_install() {
+	# install
+
+	echo "Starting installation..."
+
+	cd $DIR
+
+	for f in $BIN_FILES; do
+		inst_bin "$f"
+	done
+
+    RELOAD_SERVICES="no"
+	for f in $ETC_FILES; do
+		inst_etc "$f"
+	done
+
+    if [ "$RELOAD_SERVICES" == "yes" ] ; then
+    	service rsyslog restart
+    fi
+}
+
+function display_help() {
+
+	echo "setup <action>
+
+    where \"action\" can be one of the followings:
+
+    install        install
+    reinstall      install and overwrite configuration files
+    uninstall      uninstall
+    purge          uninstall and remove configuration files"
+}
+
+function parse_arguments() {
+	# parse arguments (and execute the appropriate functions)
+
+	if [ -z $1 ] ; then
+		echo "Argument needed"
+		echo
+		display_help
+		exit 1
+	fi
+
+	while [[ $1 ]]
+	do
+	case "$1" in
+		"reinstall")
+			FORCE="yes"
+            do_install
+			shift
+			;;
+		"install")
+			do_install
+			shift
+			;;
+		"uninstall")
+			do_uninstall
+			shift
+			;;
+        "purge")
+            do_purge
+            do_uninstall
+            shift
+            ;;
+		-h | --help)
+			display_help  # Call your function
+			# no shifting needed here, we're done.
+			exit 0
+			;;
+        --) # End of all options
+			shift
+			break;
+			;;
+		*)
+			echo "Error: Unknown option: $1" >&2
+			echo "Use option \"-h\" for help." >&2
+			exit 1
+			;;
+		esac
+	done
+}
+
+function main () {
+	# everything starts here
+	parse_arguments $*
+}
+
+main $*
+echo Completed
+exit 0

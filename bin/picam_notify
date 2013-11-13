@@ -1,0 +1,138 @@
+#!/bin/bash
+set -u
+SSMTP=/usr/sbin/ssmtp
+SCRIPTNAME=$(basename $0)
+source /etc/picam.conf
+
+##################
+# system functions
+##################
+
+function echov(){
+    # print if VERBOSE > 0
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 0 ]; then
+        echo "($USER): $0 $*"
+    fi
+}
+
+###############
+# program start
+###############
+
+echov "> $*"
+
+display_help() {
+    echo "$SCRIPTNAME
+
+  Options:
+    -m|--message  message (file)
+    -s|--subject  subject (string)
+    -f|--file     attachment (file)
+
+  Parameters:
+    -t|--to       recipient (string, default: root)"
+}
+
+set +u
+if [ -z $1 ] ; then
+    echo "$SCRIPTNAME: Argument needed. Use --help option for help."
+    exit 1
+fi
+
+message=""
+attachment=""
+recipient="$MAIL_TO"
+subject=""
+
+while [[ $1 ]]; do
+    case "$1" in
+        -t | --to)
+            recipient=$2
+            shift 2
+            ;;
+        -m | --message)
+            message=$2
+            shift 2
+            ;;
+        -s | --subject)
+            subject=$2
+            shift 2
+            ;;
+        -f | --file)
+            attachment=$2
+            shift 2
+            ;;
+        -h | --help)
+            display_help
+            exit 0
+            ;;
+        --) # End of all options
+            shift
+            break;
+            ;;
+        *)
+            echo "Error: Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+set -u
+
+##########################
+# check required arguments
+##########################
+
+echov "message=$message"
+echov "attachment=$attachment"
+echov "recipient=$recipient"
+echov "subject=$subject"
+
+# make sure all the data is present
+if ( [[ -z $message ]] || [[ -z $subject ]] ); then
+    echo "Missing arguments. Exiting."
+    exit 1
+fi
+
+# make sure the file containing the message exists
+if [ ! -f $message ]; then
+    echo "Error: Cannot send email. The message file \"$message\" does no exist."
+    exit 1
+fi
+
+# if attachment provided, make sure the file exists
+if [ -n $attachment ]; then
+    if [ ! -f $attachment ]; then
+        echo "The file provided as attachment does not exist"
+        exit 1
+    fi
+fi
+
+############
+# send email
+############
+
+tmpfile="/tmp/send_email-$$.tmp"
+
+# prepare the email body in the temp file
+echo -e "From: \"${MAIL_FROM_NAME}\" <${MAIL_FROM}>\nTo: "$recipient" > $tmpfile
+
+if [ -z $attachment ]; then
+    echo "sending text email to \"$recipient\" with subject \"$subject\""
+    echo -e "Subject: $subject\n" >> $tmpfile
+    /bin/cat "$message" >> "$tmpfile"
+else
+    echo "sending attachment email to \"$recipient\" with subject \"$subject\""
+    /usr/bin/mpack "$attachment" -s "$subject" -d "$message" -o "$tmpfile-enc"
+    /bin/cat "$tmpfile-enc" >> "$tmpfile"
+    /bin/rm "$tmpfile-enc"
+fi
+
+# actually send the email
+cat "$tmpfile" | $SSMTP "$recipient"
+
+# delete the temp file
+/bin/rm "$tmpfile"
+### EOF ###
