@@ -60,16 +60,16 @@ Have a look and configure it wisely, especially the option `$CHECK_SECURE_AREA`.
 Contents
 --------
 
-* picam_supervise
+* `picam_supervise`
 Decides to enable or disable motion detection based on `$CHECK_SECURE_COMMAND` in /etc/picam.conf
 
-* motion_control
+* `motion_control`
 Controls motion. Executed by `motion_supervise`
 
-* picam_event
-Does something when a motion event is triggered. Executed by motion based on the settings in motion.conf
+* `picam_event`
+Does something when a motion event is triggered. Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
-* picam_notify
+* `picam_notify`
 Notifies you of something. Executed by `picam_event` and `picam_supervise`.
 
 * examples/motion.conf
