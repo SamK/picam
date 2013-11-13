@@ -72,10 +72,10 @@ Does something when a motion event is triggered. Executed by Motion based on the
 * `picam_notify`
 Notifies you of something. Executed by `picam_event` and `picam_supervise`.
 
-* examples/motion.conf
+* `examples/motion.conf`
 My configuration file for Motion. Kind of works with a Logitec C270.
 
-* examples/ssmtp.conf
+* `examples/ssmtp.conf`
 A file that works with gmail. Change your email, username and password to make it work.
 
 
