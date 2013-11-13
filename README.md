@@ -2,12 +2,7 @@ PiCam
 =====
 
 These Bash scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
-
-Note that this is a personal project.
-It might not fit you at all. It does not work well anyway and is sketchy.
-
 This script checks if the area is secure and disable motion if it's the case.
-
 If the area is considered unsecure, then Motion detection is enabled.
 
 Basically:
@@ -15,6 +10,10 @@ Basically:
 1. When a new event is started, the user receives an email
 1. When a new image is created, the user receives an email with the image as attachment. The image is uploaded to Dropbox.
 1. When a new video is created, the user receives an image and the video is uploaded to Dropbox.
+
+> Note that this is a personal project.
+> It might not fit you at all.
+> It does not work well anyway and is sketchy.
 
 Compatibility
 -------------
