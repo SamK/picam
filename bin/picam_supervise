@@ -32,8 +32,8 @@ is_secured() {
 control() {
     # controls motion based on presence
     is_secured
-    TMPFILE="/tmp/${SCRIPTNAME}-${$}-control.tmp"
     code1=$?
+    TMPFILE="/tmp/${SCRIPTNAME}-${$}-control.tmp"
     status=$(motion_control status)
     code2=$?
 
