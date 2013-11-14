@@ -117,7 +117,7 @@ fi
 tmpfile="/tmp/send_email-$$.tmp"
 
 # prepare the email body in the temp file
-echo -e "From: \"${MAIL_FROM_NAME}\" <${MAIL_FROM}>\nTo: "$recipient" > $tmpfile
+echo -e "From: \"${MAIL_FROM_NAME}\" <${MAIL_FROM}>\nTo: $recipient" > $tmpfile
 
 if [ -z $attachment ]; then
     echo "sending text email to \"$recipient\" with subject \"$subject\""
