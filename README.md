@@ -18,7 +18,7 @@ Basically:
 Compatibility
 -------------
 
-This software has been tested on Raspberry Pi only.
+This software has been tested on Raspbian on a Raspberry Pi.
 
 Requirements
 ------------
