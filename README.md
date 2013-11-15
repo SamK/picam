@@ -67,7 +67,7 @@ Have a look and configure it wisely, especially the option `$CHECK_SECURE_AREA`.
 
 * `your_check_area_secsure_script`
 
-    write a script and put the complete path in the value of $CHECK_SECURE_AREA of `/etc/picam.conf`.
+    write a script and put the complete path in the value of `$CHECK_SECURE_AREA` of `/etc/picam.conf`.
     This script must exit `0` if the area is considered secure and motion detection does not neet to be active.
     If this script exits with something else than `0`, then motion detection will be active.
 
@@ -77,13 +77,13 @@ Have a look and configure it wisely, especially the option `$CHECK_SECURE_AREA`.
 
 * `motion_control`
 
-    controls motion. Executed by `motion_supervise`.
+    controls motion. Executed by `picam_supervise`.
 
 * `picam_event`
 
     does something when a motion event is triggered. Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
-* `picam_notify
+* `picam_notify`
 
     notifies you of something. Executed by `picam_event` and `picam_supervise`.
 
