@@ -72,30 +72,33 @@ Contents
 
 * binaries
 
-`your_check_area_secsure_script`
-: write a script and put the complete path in the value of $CHECK_SECURE_AREA of `/etc/picam.conf`.
-This script must exit `0` if the area is considered secure and motion detection does not neet to be active.
-If this script exits with something else than `0`, then motion detection will be active.
+    * `your_check_area_secsure_script`
 
-`picam_supervise`
-: decides to enable or disable motion detection based on `$CHECK_SECURE_COMMAND` in `/etc/picam.conf`
+        write a script and put the complete path in the value of $CHECK_SECURE_AREA of `/etc/picam.conf`.
+        This script must exit `0` if the area is considered secure and motion detection does not neet to be active.
+        If this script exits with something else than `0`, then motion detection will be active.
 
-`motion_control`
-: controls motion. Executed by `motion_supervise`.
+    * `picam_supervise`
+        decides to enable or disable motion detection based on `$CHECK_SECURE_COMMAND` in `/etc/picam.conf`
 
-`picam_event`
-: does something when a motion event is triggered. Executed by Motion based on the settings in `/etc/motion/motion.conf`
+    * `motion_control`
+        controls motion. Executed by `motion_supervise`.
 
-`picam_notify`
-: notifies you of something. Executed by `picam_event` and `picam_supervise`.
+    * `picam_event`
+        does something when a motion event is triggered. Executed by Motion based on the settings in `/etc/motion/motion.conf`
+
+    * `picam_notify`
+    notifies you of something. Executed by `picam_event` and `picam_supervise`.
 
 * configuration files
 
-`examples/motion.conf`
-: is my configuration file for Motion. Kind of works with a Logitec C270.
+    * `examples/motion.conf`
 
-`examples/ssmtp.conf`
-: is file for ssmtp that works with gmail. Change your email, username and password to make it work.
+    is my configuration file for Motion. Kind of works with a Logitec C270.
+
+    * `examples/ssmtp.conf`
+
+        is file for ssmtp that works with gmail. Change your email, username and password to make it work.
 
 License
 -------
