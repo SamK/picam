@@ -39,8 +39,8 @@ git clone https://github.com/samyboy/picam
 cd picam
 sudo ./setup install
 ```
-* Configure `/etc/picam.conf` (see "Configuration" below)
-* Configure `/etc/motion.conf` (see examples/motion.conf)
+* Carefully configure `/etc/picam.conf` (see "Configuration" below)
+* Configure `/etc/motion.conf` (see "Configuration" below)
 * Done!
 
 Uninstallation
@@ -53,27 +53,46 @@ sudo ./setup purge
 Configuration
 -------------
 
-The configuration file is stored at /etc/picam.conf.
+* Configure your motion installation with the following settings in `/etc/motion/motion.conf`:
+
+```
+on_event_start /usr/local/bin/picam_event event_start %v %C
+on_event_end /usr/local/bin/picam_event event_end %v %C
+on_picture_save /usr/local/bin/picam_event picture_save %v %C %f
+on_movie_start /usr/local/bin/picam_event movie_start %v %C %f
+on_movie_end /usr/local/bin/picam_event movie_end %v %C %f
+on_camera_lost /usr/local/bin/picam_event camera_lost
+```
+
+* Configure the file `/etc/picam.conf`.
 Have a look and configure it wisely, especially the option `$CHECK_SECURE_AREA`.
 
 Contents
 --------
 
-* `picam_supervise` ecides to enable or disable motion detection based on `$CHECK_SECURE_COMMAND` in `/etc/picam.conf`
+* `picam_supervise`
+
+    decides to enable or disable motion detection based on `$CHECK_SECURE_COMMAND` in `/etc/picam.conf`
 
 * `motion_control` controls motion.
-Executed by `motion_supervise`.
+
+    Executed by `motion_supervise`.
 
 * `picam_event` does something when a motion event is triggered.
-Executed by Motion based on the settings in `/etc/motion/motion.conf`
+    Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
 * `picam_notify`
-notifies you of something. Executed by `picam_event` and `picam_supervise`.
+    notifies you of something. Executed by `picam_event` and `picam_supervise`.
 
 * `examples/motion.conf`
-is my configuration file for Motion. Kind of works with a Logitec C270.
+
+    is my configuration file for Motion. Kind of works with a Logitec C270.
 
 * `examples/ssmtp.conf`
-is file for ssmtp that works with gmail. Change your email, username and password to make it work.
+    is file for ssmtp that works with gmail. Change your email, username and password to make it work.
 
+License
+-------
+
+TODO
 
