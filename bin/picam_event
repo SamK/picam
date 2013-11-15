@@ -38,7 +38,7 @@ send_message() {
 message_event_start() {
     # send an email when event starts
     echo -e "fvent $1 started.\nMessage: $*" > $TMPFILE
-    picam_notify -m $TMPFILE --subject "[motion] jvent $1" -f "$image"
+    picam_notify -m $TMPFILE --subject "[motion] event $1" -f "$image"
     /bin/rm $TMPFILE
 }
 
@@ -50,12 +50,12 @@ message_movie_end() {
     file=$3
 
     echo "New movie!
-kvent $event_id-$event_date
+event $event_id-$event_date
 File: $3
 https://www.dropbox.com/home/Applications/campi
 https://www.dropbox.com/home/Applications/campi/$(basename $3)
 " > $TMPFILE
-    picam_notify -m $TMPFILE --subject "[motion] lvent $1"
+    picam_notify -m $TMPFILE --subject "[motion] event $1"
     /bin/rm "$TMPFILE"
 }
 
@@ -64,8 +64,8 @@ message_event_end() {
     event_id=$1
     event_date=$2
     echov ">> $SCRIPTNAME.message_event_end $*"
-    echo -e "mvent $event_id-$event_date ended\nMessage: $*" > $TMPFILE
-    picam_notify -m $TMPFILE --subject "[motion] nvent $event_id"
+    echo -e "event $event_id-$event_date ended\nMessage: $*" > $TMPFILE
+    picam_notify -m $TMPFILE --subject "[motion] event $event_id"
     /bin/rm $TMPFILE
 }
 
@@ -78,7 +78,7 @@ message_picture_save() {
     echov ">> $SCRIPTNAME.message_picture_save $*"
     txt=/tmp/$SCRIPTNAME.message_picture_save
     echo -e "New image for event $1-$2\nArguments: $*" > $txt
-    picam_notify -m $txt --subject "[motion] ovent $1" -f "$image"
+    picam_notify -m $txt --subject "[motion] event $1" -f "$image"
     /bin/rm "$txt"
 }
 
