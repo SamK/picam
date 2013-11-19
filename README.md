@@ -113,6 +113,10 @@ sudo cp ./picam/bin/picam_notify /usr/local/bin/
 sudo cp ./picam/bin/motion_control /usr/local/bin/
 sudo cp ./picam/bin/picam_supervise /usr/local/bin/
 sudo cp ./picam/etc/cron.d/picam /etc/cron.d/
+
+# Install the friend detection part
+sudo cp ./picam/bin/check_secure_area-statefile
+sudo cp ./picam/bin/update_secure_area
 ```
 
 The basic setup is done: it's time for some configuration.
