@@ -1,6 +1,8 @@
 # PiCam
 
-These Bash scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
+**This project is under strong developpment***
+
+These scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
 This script checks if the area is secure and disable motion if it's the case.
 If the area is considered unsecure, then Motion detection is enabled.
 
