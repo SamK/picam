@@ -88,7 +88,7 @@ Look in the `examples` folder for an example poorly based on ping.
 
 ### 3. Install Picam
 
-* Download PiCam
+This is how to dowload and install the files:
 
 ```
 git clone https://github.com/samyboy/picam
