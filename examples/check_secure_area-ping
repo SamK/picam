@@ -5,10 +5,10 @@
 #
 # It does not always work: sometimes the iphone goes to sleep and disconnects
 
-IP="
-192.168.4.50  # galaxy s3 mini
-192.168.4.51  # iphone
-"
+#192.168.4.50  # galaxy s3 mini
+#192.168.4.51  # iphone
+IP="192.168.4.50 192.168.4.51"
+
 for ip in $IP; do
     ping -c 1 -w 1 $ip > /dev/null
     r=$?
@@ -20,7 +20,6 @@ for ip in $IP; do
         echo "IP address $ip NOT present"
     fi
 done
+
 echo "No friendly presence."
 exit 1
-
-
