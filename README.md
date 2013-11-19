@@ -10,7 +10,7 @@ Basically:
 1. When a new image is created, the user receives an email with the image as
 attachment. The image is uploaded to Dropbox.
 1. When a new video is created, the user receives an image and the video is
-uploaded somewhere
+uploaded to Dropbox.
 
 > Note that this is a personal project.
 > It might not fit you at all.
@@ -33,26 +33,19 @@ This software has been tested on Raspbian on a Raspberry Pi.
 
 ### The "event" part
 
-* `picam_event`
+* `picam_event` does something when a motion event is triggered.
+Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
-    does something when a motion event is triggered.
-    Executed by Motion based on the settings in `/etc/motion/motion.conf`
-
-* `picam_notify`
-
-    notifies you of something.
+* `picam_notify` notifies you of something.
 
 ### The "supervise" part
 
-* `picam_supervise`
-    does stuff automatically.
-    By default it is executed to check if the area is secure.
-    It decides to enable or disable motion detection based on `$CHECK_SECURE_AREA` in `/etc/picam.conf`
-    It is executed by cron every minute (maybe a bit overkill?).
+* `picam_supervise` does stuff automatically.
+By default it is executed to check if the area is secure.
+It decides to enable or disable motion detection based on `$CHECK_SECURE_AREA` in `/etc/picam.conf`
+It is executed by cron every minute (maybe a bit overkill?).
 
-* `motion_control`
-
-    controls motion. Executed by `picam_supervise`.
+* `motion_control` controls motion. Executed by `picam_supervise`.
 
 ## Installation
 
@@ -95,18 +88,18 @@ Look in the `examples` folder for an example poorly based on ping.
 
 ### 3. Install Picam
 
-* Download and install PiCam
+* Download PiCam
 ```
 git clone https://github.com/samyboy/picam
 
-# the config file
+# Copy the config file
 sudo cp ./picam/etc/picam.conf /etc/picam.conf
 
-# The event part
+# Install the event part
 sudo cp ./picam/bin/picam_event /usr/local/bin/
 sudo cp ./picam/bin/picam_notify /usr/local/bin/
 
-# the  "supervise" part
+# Install the  "supervise" part
 sudo cp ./picam/bin/motion_control /usr/local/bin/
 sudo cp ./picam/bin/picam_supervise /usr/local/bin/
 sudo cp ./picam/etc/cron.d/picam /etc/cron.d/
