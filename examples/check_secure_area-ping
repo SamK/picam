@@ -1,17 +1,26 @@
 #!/bin/bash
-IP="192.168.4.50 192.168.4.51"
-  for ip in $IP; do
+# This is an example of the check_area_secure script.
+# It's actually how I make it work.
+# If any of these ip addresses are below, then the area is secure
+#
+# It does not always work: sometimes the iphone goes to sleep and disconnects
+
+IP="
+192.168.4.50  # galaxy s3 mini
+192.168.4.51  # iphone
+"
+for ip in $IP; do
     ping -c 1 -w 1 $ip > /dev/null
     r=$?
     if [[ "$r" == "0" ]]; then
-      # The IP $ip is present. No need to enable
-      echo "IP address $ip is present."
- exit 0
+        # The IP $ip is present. No need to enable
+        echo "IP address $ip is present."
+        exit 0
     else
-      echo "IP address $ip NOT present"
+        echo "IP address $ip NOT present"
     fi
-  done
-  echo "No family at home"
+done
+echo "No friendly presence."
 exit 1
 
 
