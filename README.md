@@ -42,12 +42,19 @@ Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
 ### The "supervise" part
 
+
 * `picam_supervise` does stuff automatically.
 By default it is executed to check if the area is secure.
 It decides to enable or disable motion detection based on `$CHECK_SECURE_AREA` in `/etc/picam.conf`
 It is executed by cron every minute (maybe a bit overkill?).
 
 * `motion_control` controls motion. Executed by `picam_supervise`.
+
+### The friend detection part
+
+* `update_secure_area` detects if the area is secure
+
+* `check_secure_area-statefile` analyzes the result of `update_secure_area`
 
 ## Installation
 
