@@ -1,10 +1,26 @@
 #!/bin/bash
 #set -o nounset
+
+# Where the picam scripts are located
 PATH=/usr/local/bin:$PATH
+
+##################
+# system variables
+##################
+
+# Looks like the $USER variable is not bound
+USER=$(id -u -n)
+
 # The current directory
 SCRIPTNAME=$(basename $0)
+
+# A unique temp file
 TMPFILE="/tmp/${SCRIPTNAME}-$$.tmp"
+
+# sourcing the config file
 source /etc/picam.conf
+
+
 
 ##################
 # system functions
