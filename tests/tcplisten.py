@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 HOST = '127.0.0.1'      # Symbolic name meaning the local host
 HOST = ''
-PORT = 50008            # Arbitrary non-privileged port
+PORT = 50007            # Arbitrary non-privileged port
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
