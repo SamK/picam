@@ -1,8 +1,10 @@
 #!/bin/bash
 set -u
 SSMTP=/usr/sbin/ssmtp
-SCRIPTNAME=$(basename $0)
+# Looks like the $USER variable is not bound
+USER=$(id -u -n)
 source /etc/picam.conf
+SCRIPTNAME=$(basename $0)
 
 ##################
 # system functions
