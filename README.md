@@ -1,5 +1,3 @@
-{:toc}
-
 # PiCam
 
 These Bash scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
