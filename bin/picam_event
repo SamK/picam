@@ -44,7 +44,7 @@ send_message() {
     # send a common email
     event_id=$1
     message=$*
-    subject="[motion] pvent $event_id"
+    subject="[motion] event $event_id"
     echov ">> $SCRIPTNAME.send_message :: subject: $subject"
     echo $* > $TMPFILE
     picam_notify -m $TMPFILE --subject "$subject"
