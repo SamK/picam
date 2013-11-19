@@ -1,6 +1,6 @@
 # PiCam
 
-**This project is under strong developpment***
+**WARNING: This project is under heavy developpment***
 
 These scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
 This script checks if the area is secure and disable motion if it's the case.
