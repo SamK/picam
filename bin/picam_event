@@ -168,6 +168,7 @@ parse_arguments() {
             "movie_end")
                 message_movie_end $2 $3 $4
                 upload $4
+                r=$?
                 exit $r
                 ;;
             "picture_save")
