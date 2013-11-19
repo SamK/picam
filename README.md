@@ -89,6 +89,7 @@ Look in the `examples` folder for an example poorly based on ping.
 ### 3. Install Picam
 
 * Download PiCam
+
 ```
 git clone https://github.com/samyboy/picam
 
