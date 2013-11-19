@@ -103,15 +103,14 @@ function display_help() {
 function parse_arguments() {
 	# parse arguments (and execute the appropriate functions)
 
-	if [ -z $1 ] ; then
+	if [ -z $1 ]; then
 		echo "Argument needed"
 		echo
 		display_help
 		exit 1
 	fi
 
-	while [[ $1 ]]
-	do
+    while [[ $1 ]]; do
 	case "$1" in
 		"reinstall")
 			FORCE="yes"
