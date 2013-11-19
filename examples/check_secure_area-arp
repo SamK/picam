@@ -1,0 +1,8 @@
+#!/bin/bash
+# This is an example of the check_area_secure script.
+# If any of these mac addresses below are in the arp cache, then the area is secure
+#
+
+addr="d8:31:cf:00:00:00\|84:85:06:00:00:00"
+
+arp -a | grep $addr
