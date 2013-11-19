@@ -10,24 +10,24 @@
 IP="192.168.4.50 192.168.4.51"
 MAX_AGE_MIN=10
 
-STATFILE="/tmp/$(basename $0).stat"
+STATEFILE="/tmp/$(basename $0).stat"
 
 for ip in $IP; do
     ping -c 1 -w 1 $ip > /dev/null
     r=$?
     if [[ "$r" == "0" ]]; then
         # The IP $ip is present. No need to enable
-        echo "IP address $ip is present. Touching $STATFILE"
-        touch "$STATFILE"
+        echo "IP address $ip is present. Touching $STATEFILE"
+        touch "$STATEFILE"
         exit 0
     else
         echo "IP address $ip NOT present"
     fi
 done
 
-[ -f $STATFILE ] || exit 2
+[ -f $STATEFILE ] || exit 2
 
-changed=$(stat -c %Y "$STATFILE")
+changed=$(stat -c %Y "$STATEFILE")
 now=$(date +%s)
 let max_age_s="$MAX_AGE_MIN * 60"
 let elapsed=now-changed
@@ -38,7 +38,7 @@ let elapsed=now-changed
 #echo elapsed: $elapsed
 
 if [ "$elapsed" -gt "$max_age_s" ]; then
-    echo "No friendly presence."
+    echo "No friendly presence since $elapsed seconds."
     exit 1
 else
     echo "Last seen: $elapsed seconds. Still secure"

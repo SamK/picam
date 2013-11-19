@@ -1,0 +1,21 @@
+#!/bin/bash
+# This is an example of the check_area_secure script.
+# It's actually how I make it work.
+# If any of these ip addresses are below, then the area is secure
+#
+# It does not always work: sometimes the iphone goes to sleep and disconnects
+
+set -e 
+
+source /etc/picam.conf
+
+
+while : # infinite loop
+do
+    # capture 1 packet
+    tcpdump -i wlan0 -c 1 -w "$STATEFILE".tmp $tcpdump_filter
+
+    # save the packet to the state file
+    tcpdump -r "$STATEFILE.tmp" > "$STATEFILE"
+    sleep 1
+done
