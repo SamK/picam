@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-
-source /etc/picam.conf
-set -u
-
-wget $STATUS_WIFI_URL -q -O - | grep -i "$SAFE_MAC"
