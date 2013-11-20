@@ -5,18 +5,29 @@ SSMTP=/usr/sbin/ssmtp
 USER=$(id -u -n)
 source /etc/picam.conf
 SCRIPTNAME=$(basename $0)
+TMPFILE="/run/$SCRIPTNAME-$$.tmp"
 
 ##################
 # system functions
 ##################
 
-function echov(){
-    # print if VERBOSE > 0
+function echo_v(){
+    # print if VERBOSE == 1
     set +u
     [ -z $VERBOSE ] && return 0
     set -u
-    if [ "$VERBOSE" -gt 0 ]; then
-        echo "($USER): $0 $*"
+    if [ "$VERBOSE" -eq 0 ]; then
+        echo "> ($USER): [$0] $*"
+    fi
+}
+
+function echo_vv(){
+    # print if VERBOSE > 1
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 1 ]; then
+        echo ">> ($USER): [$0] $*"
     fi
 }
 
@@ -24,7 +35,7 @@ function echov(){
 # program start
 ###############
 
-echov "> $*"
+echo_vv "starting program $*"
 
 display_help() {
     echo "$SCRIPTNAME
@@ -43,6 +54,7 @@ if [ -z $1 ] ; then
     echo "$SCRIPTNAME: Argument needed. Use --help option for help."
     exit 1
 fi
+set -u
 
 message=""
 attachment=""
@@ -87,10 +99,10 @@ set -u
 # check required arguments
 ##########################
 
-echov "message=$message"
-echov "attachment=$attachment"
-echov "recipient=$recipient"
-echov "subject=$subject"
+echo_vv "message=$message"
+echo_vv "attachment=$attachment"
+echo_vv "recipient=$recipient"
+echo_vv "subject=$subject"
 
 # make sure all the data is present
 if ( [[ -z $message ]] || [[ -z $subject ]] ); then
@@ -116,25 +128,26 @@ fi
 # send email
 ############
 
-tmpfile="/tmp/send_email-$$.tmp"
-
 # prepare the email body in the temp file
-echo -e "From: \"${MAIL_FROM_NAME}\" <${MAIL_FROM}>\nTo: $recipient" > $tmpfile
+echo -e "From: \"${MAIL_FROM_NAME}\" <${MAIL_FROM}>\nTo: $recipient" > $TMPFILE
 
 if [ -z $attachment ]; then
     echo "sending text email to \"$recipient\" with subject \"$subject\""
-    echo -e "Subject: $subject\n" >> $tmpfile
-    /bin/cat "$message" >> "$tmpfile"
+    echo -e "Subject: $subject\n" >> $TMPFILE
+    /bin/cat "$message" >> "$TMPFILE"
 else
     echo "sending attachment email to \"$recipient\" with subject \"$subject\""
-    /usr/bin/mpack "$attachment" -s "$subject" -d "$message" -o "$tmpfile-enc"
-    /bin/cat "$tmpfile-enc" >> "$tmpfile"
-    /bin/rm "$tmpfile-enc"
+    /usr/bin/mpack "$attachment" -s "$subject" -d "$message" -o "$TMPFILE-enc"
+    /bin/cat "$TMPFILE-enc" >> "$TMPFILE"
+    /bin/rm "$TMPFILE-enc"
 fi
 
 # actually send the email
-cat "$tmpfile" | $SSMTP "$recipient"
+cat "$TMPFILE" | $SSMTP "$recipient"
 
 # delete the temp file
-/bin/rm "$tmpfile"
+/bin/rm "$TMPFILE"
+
+echo_vv "Program ended"
+
 ### EOF ###
