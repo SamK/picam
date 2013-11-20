@@ -1,2 +1,2 @@
 * replace motion_control with motion-control from http://www.lavrsen.dk/foswiki/bin/view/Motion/MotionControl
-* taget_dir to /run/motion (in tmpfs) and move file elsewhere if upload failed
+* replace VERBOSE with LOGLEVEL
