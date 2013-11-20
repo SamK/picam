@@ -115,7 +115,15 @@ upload() {
         return 0
     fi
     # the upload failed: notify the user
-    msg="Failed to upload \"$file\""
+    faileddir="/var/tmp/motion"
+    mkdir -p $faileddir
+
+    /bin/mv "$file" "$faileddir"
+    msg="error from $0:
+    Failed to upload \"$file\"
+
+    file moved to  $faileddir. remove it manually
+    "
     echo $msg
     send_message 0 $msg
     return 1
