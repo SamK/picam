@@ -1,0 +1,10 @@
+#!/bin/bash
+# This is an example of the check_area_secure script.
+# If any of these mac addresses below are in the arp cache, then the area is secure
+#
+
+set -u
+source /etc/picam.conf
+
+STATUS_WIFI_URL='http://gw/Status_Wireless.live.asp'
+wget $STATUS_WIFI_URL -q -O - | grep -i "$SAFE_MAC"
