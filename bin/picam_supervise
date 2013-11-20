@@ -78,7 +78,7 @@ function parse_arguments() {
     while [[ $1 ]]; do
         case "$1" in
             "presence")
-                is_presence
+                is_secured
                 exit $?
                 ;;
             "control")
