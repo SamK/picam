@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -o nounset
-SCRIPT_NAME=($basename $0)
+SCRIPTNAME=($basename $0)
 source /etc/picam.conf
 
 ##################
