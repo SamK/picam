@@ -7,15 +7,37 @@ source /etc/picam.conf
 # system functions
 ##################
 
-function echov() {
-    # print if VERBOSE > 0
+function echo_v(){
+    # print if VERBOSE == 1
     set +u
     [ -z $VERBOSE ] && return 0
     set -u
-    if [ "$VERBOSE" -gt 0 ]; then
-        echo "$*"
+    if [ "$VERBOSE" -eq 0 ]; then
+        echo "> ($USER): [$0] $*"
     fi
 }
+
+function echo_vv(){
+    # print if VERBOSE == 2
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -eq 2 ]; then
+        echo ">> ($USER): [$0] $*"
+    fi
+}
+
+function echo_vvv(){
+    # print if VERBOSE > 2
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 2 ]; then
+        echo ">>>($USER): [$0] $*"
+    fi
+}
+
+
 
 #################
 # query functions
@@ -23,13 +45,15 @@ function echov() {
 
 is_secured() {
     # determine if friendly presence is here
+    echo_vvv "is_secured($*)"
     $CHECK_SECURE_COMMAND
     r=$?
-    echo "The check secure command \"${CHECK_SECURE_COMMAND}\" returned code $r"
+    echo_vv "The check secure command \"${CHECK_SECURE_COMMAND}\" returned code $r"
     return $r
 }
 
 control() {
+    echo_vvv "control($*)"
     # controls motion based on presence
     is_secured
     code1=$?
@@ -37,25 +61,24 @@ control() {
     status=$(motion_control status)
     code2=$?
 
-    echo monitoring presence...
     if [[ "$code1" == "0" ]] && [[ "$code2" == "0" ]]; then
-        echo "# there is presence and motion is active ($status); then pause it"
+        echo_vv "There is presence and motion is active ($status); then pause it"
         motion_control pause
     elif [[ $code1 != "0" ]] && [ "$code2" == "1" ]; then
-        echo "# there is nobody and motion is not active ($status), then start it"
+        echo_vv "There is nobody and motion is not active ($status), then start it"
         motion_control start
     elif [[ $code2 == "2" ]]; then
         echo "Motion is in status $status. Sending warning."
         echo "Motion is in status $status. This is a warning." > $TMPFILE
-        picam_notify --message $TMPFILE --subject "[motion] Warning. Unresponsive security!"
+        picam_notify --message $TMPFILE --subject "[motion] Warning. Unresponsive camera!"
         /bin/rm "$TMPFILE"
     elif [[ $code2 == "4" ]]; then
         echo "Motion seems stopped. Sending warning."
         echo "Motion seems stopped. This is a warning." > $TMPFILE
-        picam_notify -message $TMPFILE --subject "[motion] Warning. Unresponsive security!"
+        picam_notify -message $TMPFILE --subject "[motion] Warning. Motion software is stopped!"
         /bin/rm "$TMPFILE"
     else
-        echo "Keeping state $status"
+        echo_vvv "Keeping state $status"
     fi
 }
 
@@ -86,7 +109,7 @@ function parse_arguments() {
                 exit $?
                 ;;
             -v | --verbose)
-                VERBOSE=1
+                VERBOSE=2
                 shift
                 ;;
             -h | --help)

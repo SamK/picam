@@ -1,2 +1,1 @@
 * replace motion_control with motion-control from http://www.lavrsen.dk/foswiki/bin/view/Motion/MotionControl
-* replace VERBOSE with LOGLEVEL

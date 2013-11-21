@@ -1,4 +1,5 @@
 #!/bin/bash
+#.
 #set -o nounset
 
 # Where the picam scripts are located
@@ -15,24 +16,43 @@ USER=$(id -u -n)
 SCRIPTNAME=$(basename $0)
 
 # A unique temp file
-TMPFILE="/tmp/${SCRIPTNAME}-$$.tmp"
+TMPFILE="/run/motion/${SCRIPTNAME}-$$.tmp"
 
 # sourcing the config file
 source /etc/picam.conf
-
-
 
 ##################
 # system functions
 ##################
 
-function echov(){
-    # print if VERBOSE > 0
+function echo_v(){
+    # print if VERBOSE == 1
     set +u
     [ -z $VERBOSE ] && return 0
     set -u
-    if [ "$VERBOSE" -gt 0 ]; then
-        echo "[${0}] $*"
+    if [ "$VERBOSE" -eq 1 ]; then
+        echo "> ($USER): [$0] $*"
+    fi
+}
+
+function echo_vv(){
+    # print if VERBOSE == 2
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -eq 2 ]; then
+        echo ">> ($USER): [$0] $*"
+    fi
+}
+
+
+function echo_vvv(){
+    # print if VERBOSE > 2
+    set +u
+    [ -z $VERBOSE ] && return 0
+    set -u
+    if [ "$VERBOSE" -gt 2 ]; then
+        echo ">>>($USER): [$0] $*"
     fi
 }
 
@@ -45,7 +65,6 @@ send_message() {
     event_id=$1
     message=$*
     subject="[motion] event $event_id"
-    echov ">> $SCRIPTNAME.send_message :: subject: $subject"
     echo $* > $TMPFILE
     picam_notify -m $TMPFILE --subject "$subject"
     /bin/rm "$TMPFILE"
@@ -60,11 +79,10 @@ message_event_start() {
 
 message_movie_end() {
     # send an email when a movie ends
-    echov ">> $SCRIPTNAME.message_movie_end $*"
+    echo_vvv "message_movie_end($*)"
     event_id=$1
     event_date=$2
     file=$3
-
     echo "New movie!
 event $event_id-$event_date
 File: $3
@@ -77,9 +95,9 @@ https://www.dropbox.com/home/Applications/campi/$(basename $3)
 
 message_event_end() {
     # send a message when the event ends
+    echo_vvv "message_event_end($*)"
     event_id=$1
     event_date=$2
-    echov ">> $SCRIPTNAME.message_event_end $*"
     echo -e "event $event_id-$event_date ended\nMessage: $*" > $TMPFILE
     picam_notify -m $TMPFILE --subject "[motion] event $event_id"
     /bin/rm $TMPFILE
@@ -90,8 +108,8 @@ message_picture_save() {
     # 1 event id
     # 2 event date
     # 3 image file
+    echo_vvv "message_picture_save($*)"
     image="$3"
-    echov ">> $SCRIPTNAME.message_picture_save $*"
     txt=/tmp/$SCRIPTNAME.message_picture_save
     echo -e "New image for event $1-$2\nArguments: $*" > $txt
     picam_notify -m $txt --subject "[motion] event $1" -f "$image"
@@ -105,26 +123,24 @@ message_picture_save() {
 upload() {
     # upload a file
     # 1 file
-      file=$1
-    echov ">> $SCRIPTNAME.upload $*"
+    echo_vvv "upload($*)"
+    file=$1
     $UPLOAD_SCRIPT $file $(basename $file)
     if [ "$?" == "0" ]; then
         # the upload is good: remove the local file
         /bin/rm "$file"
-        echov ">>> uploaded file $(basename $file)"
+        echo_vv "The file \"$(basename $file)\" has been uploaded."
         return 0
     fi
     # the upload failed: notify the user
     faileddir="/var/tmp/motion"
     mkdir -p $faileddir
-
     /bin/mv "$file" "$faileddir"
-    msg="error from $0:
+    msg="Error from $0:
     Failed to upload \"$file\"
-
-    file moved to  $faileddir. remove it manually
+    File moved to  $faileddir. Please remove it manually
     "
-    echo $msg
+    echo Error: $msg
     send_message 0 $msg
     return 1
 }
@@ -170,7 +186,6 @@ parse_arguments() {
                 exit $?
                 ;;
             "movie_start")
-                echo "movie_start $*"
                 exit 0
                 ;;
             "movie_end")
@@ -204,7 +219,7 @@ parse_arguments() {
 
 main () {
     # this is where everything starts
-    echo '> ('"$USER"'): '"$0 $*"
+    echo_vv "$0 $*"
     parse_arguments $*
 }
 

@@ -1,41 +1,46 @@
 #!/bin/bash
-set -u
 SSMTP=/usr/sbin/ssmtp
 # Looks like the $USER variable is not bound
 USER=$(id -u -n)
 source /etc/picam.conf
 SCRIPTNAME=$(basename $0)
-TMPFILE="/run/$SCRIPTNAME-$$.tmp"
+TMPFILE="/run/motion/$SCRIPTNAME-$$.tmp"
 
 ##################
 # system functions
 ##################
 
-function echo_v(){
+function echo_v() {
     # print if VERBOSE == 1
-    set +u
     [ -z $VERBOSE ] && return 0
-    set -u
     if [ "$VERBOSE" -eq 0 ]; then
         echo "> ($USER): [$0] $*"
     fi
 }
 
-function echo_vv(){
-    # print if VERBOSE > 1
-    set +u
+function echo_vv() {
+    # print if VERBOSE == 2
     [ -z $VERBOSE ] && return 0
-    set -u
-    if [ "$VERBOSE" -gt 1 ]; then
+    if [ "$VERBOSE" -eq 1 ]; then
         echo ">> ($USER): [$0] $*"
     fi
 }
+
+function echo_vvv() {
+    # print if VERBOSE > 2
+    [ -z $VERBOSE ] && return 0
+    if [ "$VERBOSE" -gt 2 ]; then
+        echo ">> ($USER): [$0] $*"
+    fi
+}
+
+
 
 ###############
 # program start
 ###############
 
-echo_vv "starting program $*"
+echo_vvv "starting program $*"
 
 display_help() {
     echo "$SCRIPTNAME
@@ -49,12 +54,10 @@ display_help() {
     -t|--to       recipient (string, default: root)"
 }
 
-set +u
 if [ -z $1 ] ; then
     echo "$SCRIPTNAME: Argument needed. Use --help option for help."
     exit 1
 fi
-set -u
 
 message=""
 attachment=""
@@ -93,16 +96,15 @@ while [[ $1 ]]; do
             ;;
     esac
 done
-set -u
 
 ##########################
 # check required arguments
 ##########################
 
-echo_vv "message=$message"
-echo_vv "attachment=$attachment"
-echo_vv "recipient=$recipient"
-echo_vv "subject=$subject"
+echo_vvv "message=$message"
+echo_vvv "attachment=$attachment"
+echo_vvv "recipient=$recipient"
+echo_vvv "subject=$subject"
 
 # make sure all the data is present
 if ( [[ -z $message ]] || [[ -z $subject ]] ); then
@@ -148,6 +150,6 @@ cat "$TMPFILE" | $SSMTP "$recipient"
 # delete the temp file
 /bin/rm "$TMPFILE"
 
-echo_vv "Program ended"
+echo_vvv "Program ended"
 
 ### EOF ###
