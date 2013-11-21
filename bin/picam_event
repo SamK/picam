@@ -62,6 +62,7 @@ function echo_vvv(){
 
 send_message() {
     # send a common email
+    echo_vvv "send_message($*)"
     event_id=$1
     message=$*
     subject="[motion] event $event_id"
@@ -72,6 +73,7 @@ send_message() {
 
 message_event_start() {
     # send an email when event starts
+    echo_vvv "message_event_start($*)"
     echo -e "fvent $1 started.\nMessage: $*" > $TMPFILE
     picam_notify -m $TMPFILE --subject "[motion] event $1" -f "$image"
     /bin/rm $TMPFILE
@@ -178,10 +180,12 @@ parse_arguments() {
     while [[ $1 ]]; do
         case "$1" in
             "event_start")
+                echo_v "The event $2 started"
                 send_message $2 "New event detected: event #$2. More coming later"
                 exit 0
                 ;;
             "event_end")
+                echo_v "The event $2 ended"
                 message_event_end $2 $3
                 exit $?
                 ;;
