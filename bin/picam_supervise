@@ -76,7 +76,7 @@ control() {
     elif [[ $code2 == "4" ]]; then
         echo "Motion seems stopped. Sending warning."
         echo "Motion seems stopped. This is a warning." > $TMPFILE
-        picam_notify -message $TMPFILE --subject "[motion] Warning. Motion software is stopped!"
+        picam_notify --message $TMPFILE --subject "[motion] Warning. Motion software is stopped!"
         /bin/rm "$TMPFILE"
     else
         echo_vvv "Keeping state $status"
