@@ -1,6 +1,6 @@
 #!/bin/bash
 #.
-#set -o nounset
+set -o nounset
 
 # Where the picam scripts are located
 PATH=/usr/local/bin:$PATH
@@ -28,7 +28,10 @@ source /etc/picam.conf
 function echo_v(){
     # print if VERBOSE == 1
     set +u
-    [ -z $VERBOSE ] && return 0
+    if [ -z $VERBOSE ]; then
+      set -u
+      return 0
+    fi
     set -u
     if [ "$VERBOSE" -eq 1 ]; then
         echo "> ($USER): [$0] $*"
@@ -38,8 +41,11 @@ function echo_v(){
 function echo_vv(){
     # print if VERBOSE == 2
     set +u
-    [ -z $VERBOSE ] && return 0
-    set -u
+    if [ -z $VERBOSE ]; then
+      #set -u
+      return 0
+    fi
+    #set -u
     if [ "$VERBOSE" -eq 2 ]; then
         echo ">> ($USER): [$0] $*"
     fi
@@ -49,7 +55,10 @@ function echo_vv(){
 function echo_vvv(){
     # print if VERBOSE > 2
     set +u
-    [ -z $VERBOSE ] && return 0
+    if [ -z $VERBOSE ]; then
+        set -u
+        return 0
+    fi
     set -u
     if [ "$VERBOSE" -gt 2 ]; then
         echo ">>>($USER): [$0] $*"
@@ -169,6 +178,7 @@ parse_arguments() {
     # $3 event_text
     # $4 file
 
+    set +u
     if [ -z $1 ] ; then
         # the user did not provide an argument
         # print some help and exit with error
@@ -177,7 +187,9 @@ parse_arguments() {
         exit 1
     fi
 
+    set +u
     while [[ $1 ]]; do
+        set -u
         case "$1" in
             "event_start")
                 echo_v "The event $2 started"
@@ -185,7 +197,10 @@ parse_arguments() {
                 exit 0
                 ;;
             "event_end")
-                echo_v "The event $2 ended"
+                echo_v "The event $2 ended: ($*)"
+                set +u
+                echo_vv "2 = $2"
+                echo_vv "3 = $3"
                 message_event_end $2 $3
                 exit $?
                 ;;
@@ -201,6 +216,12 @@ parse_arguments() {
             "picture_save")
                 message_picture_save $2 $3 $4
                 upload $4
+                exit 0
+                ;;
+            "camera_lost")
+                set +u
+                send_message $2 "Camera lost on $(hostname --fqdn)"
+                set -u
                 exit 0
                 ;;
             -h | --help)
@@ -219,6 +240,7 @@ parse_arguments() {
                 ;;
         esac
     done
+    set -u
 }
 
 main () {
