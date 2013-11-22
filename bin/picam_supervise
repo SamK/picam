@@ -1,8 +1,8 @@
 #!/bin/bash
 #set -o nounset
-SCRIPTNAME=($basename $0)
-USER=$(id -u -n)
 source /etc/picam.conf
+SCRIPTNAME=(basename $0)
+USER=$(id -u -n)
 
 ##################
 # system functions
