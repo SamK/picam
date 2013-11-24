@@ -47,6 +47,11 @@ function echo_vvv(){
 is_secured() {
     # determine if friendly presence is here
     echo_vvv "is_secured($*)"
+    if [ -z $CHECK_ZONE_CMD ]; then
+        echo "The variable \$CHECK_ZONE_CMD is unset. Please configue /etc/picam.conf."
+        echo "Considering zone unsecure."
+        return 1
+    fi
     eval $CHECK_ZONE_CMD
     r=$?
     echo_vv "The check secure zone command \"${CHECK_ZONE_CMD}\" returned code $r"
