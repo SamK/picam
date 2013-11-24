@@ -47,7 +47,7 @@ function echo_vvv(){
 is_secured() {
     # determine if friendly presence is here
     echo_vvv "is_secured($*)"
-    $CHECK_AREA_CMD
+    eval $CHECK_AREA_CMD
     r=$?
     echo_vv "The check secure area command \"${CHECK_AREA_CMD}\" returned code $r"
     return $r
