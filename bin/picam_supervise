@@ -47,9 +47,9 @@ function echo_vvv(){
 is_secured() {
     # determine if friendly presence is here
     echo_vvv "is_secured($*)"
-    eval $CHECK_AREA_CMD
+    eval $CHECK_ZONE_CMD
     r=$?
-    echo_vv "The check secure area command \"${CHECK_AREA_CMD}\" returned code $r"
+    echo_vv "The check secure zone command \"${CHECK_ZONE_CMD}\" returned code $r"
     return $r
 }
 
@@ -88,7 +88,8 @@ display_help() {
 
     where <action> can be one of the followings:
 
-    presence     test friendly presence
+    fixme: option
+    zone         check if the zone is secure
     control      search presence. enable if presence, disable if not"
 }
 

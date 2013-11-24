@@ -3,8 +3,8 @@
 **WARNING: This project is under heavy developpment***
 
 These scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
-This script checks if the area is secure and disable motion if it's the case.
-If the area is considered unsecure, then Motion detection is enabled.
+This script checks if the zone is secure and disable motion if it's the case.
+If the zone is considered unsecure, then Motion detection is enabled.
 
 Basically:
 
@@ -43,17 +43,17 @@ Executed by Motion based on the settings in `/etc/motion/motion.conf`
 
 
 * `picam_supervise` does stuff automatically.
-By default it is executed to check if the area is secure.
-It decides to enable or disable motion detection based on `$CHECK_SECURE_AREA` in `/etc/picam.conf`
+By default it is executed to check if the zone is secure.
+It decides to enable or disable motion detection based on `$CHECK_ZONE_CMD` in `/etc/picam.conf`
 It is executed by cron every minute (maybe a bit overkill?).
 
 * `motion_control` controls motion. Executed by `picam_supervise`.
 
 ### The friend detection part
 
-* `update_secure_area` detects if the area is secure
+* `update_secure_zone` detects if the zone is secure
 
-* `check_secure_area-statefile` analyzes the result of `update_secure_area`
+* `check_secure_zone-statefile` analyzes the result of `update_secure_zone`
 
 ## Installation
 
@@ -63,7 +63,7 @@ require some work.
 The summary of the installation looks like this:
 
 1. Prepare the system
-2. Write your check_secure_area script
+2. Write your check_secure_zone script
 3. Install Picam
 4. Configure motion
 5. Configure PiCam
@@ -73,24 +73,24 @@ The summary of the installation looks like this:
 * Install the required packages above
 * Install dropbody_uploader.sh or any other script that uploads the media files somewhere safe. <!-- TODO: put in picam.conf -->
 
-### 2. Write your `check_secure_area` script
+### 2. Write your `check_secure_zone` script
 
 This is a script that you will write yourself!
 
-It is a script that decides if the area is considered "secure".
-For instance if friendly presence is in the room, the area can be considered secure.
+It is a script that decides if the zone is considered "secure".
+For instance if friendly presence is in the room, the zone can be considered secure.
 If the room is empty, then it is considered "insecure"
 
 This will be used to disable or enable motion detection.
 
-* If the area is considered "secure", then motion detection is disabled.
-* If the area is considered "insecure", then motion detection is enabled.
+* If the zone is considered "secure", then motion detection is disabled.
+* If the zone is considered "insecure", then motion detection is enabled.
 
-This script must exit `0` if the area is considered secure.
-If this script exits with something else than `0`, the area will be considered "not secure"
+This script must exit `0` if the zone is considered secure.
+If this script exits with something else than `0`, the zone will be considered "not secure"
 and motion detection will be activated.
 
-This file must be referenced in `$CHECK_SECURE_AREA` field of `/etc/picam.conf`.
+This file must be referenced in `$CHECK_ZONE_CMD` field of `/etc/picam.conf`.
 
 Look in the `examples` folder for an example poorly based on ping.
 
@@ -114,8 +114,8 @@ sudo cp ./picam/bin/picam_supervise /usr/local/bin/
 sudo cp ./picam/etc/cron.d/picam /etc/cron.d/
 
 # Install the friend detection part
-sudo cp ./picam/bin/check_secure_area-statefile
-sudo cp ./picam/bin/update_secure_area
+sudo cp ./picam/bin/check_secure_zone-statefile
+sudo cp ./picam/bin/update_secure_zone
 ```
 
 The basic setup is done: it's time for some configuration.
@@ -138,7 +138,7 @@ Restart motion to apply changes
 ### 5. Configure PiCam
 
 * The main configuration file is `/etc/picam.conf`.
-Have a look and configure it wisely, especially the option `$CHECK_SECURE_AREA`.
+Have a look and configure it wisely, especially the option `$CHECK_ZONE_CMD`.
 
 #### 5.1 Configure notifications
 
