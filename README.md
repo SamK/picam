@@ -157,7 +157,6 @@ By default everything is sent to syslog using the `logger` command.
 You can copy the files `examples/rsyslog.d/picam.conf` and
 `examples/logrotate.d/picam` to the appropriate folder if you want to have a
 special generated log file.
-<!-- TODO: move the syslog files into /examples -->
 
 
 ## The `examples` folder
