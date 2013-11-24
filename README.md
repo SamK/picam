@@ -71,7 +71,7 @@ The summary of the installation looks like this:
 ### 1. Prepare the system
 
 * Install the required packages above
-* Install dropbody_uploader.sh or any other script that uploads the media files somewhere safe. <!-- TODO: put in picam.conf -->
+* Install dropbody_uploader.sh or any other script that uploads the media files somewhere safe.
 
 ### 2. Write your `check_secure_zone` script
 
