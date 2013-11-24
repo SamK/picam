@@ -32,6 +32,7 @@ This software has been tested on Raspbian on a Raspberry Pi with a logitec C720.
 Executed by Motion based on the settings in `/etc/motion/motion.conf`
 * `picam_notify` notifies you of something by email.
 * `picam_supervise` checks if the zone is secure and does appropriate action.
+
     By default it is executed to check if the zone is secure.
     It decides to enable or disable motion detection based on `$CHECK_ZONE_CMD` in `/etc/picam.conf`
     It is executed by cron every minute.
