@@ -83,7 +83,7 @@ send_message() {
 message_event_start() {
     # send an email when event starts
     echo_vvv "message_event_start($*)"
-    echo -e "fvent $1 started.\nMessage: $*" > $TMPFILE
+    echo -e "Event $1 started.\nMessage: $*" > $TMPFILE
     picam_notify -m $TMPFILE --subject "[motion] event $1" -f "$image"
     /bin/rm $TMPFILE
 }
