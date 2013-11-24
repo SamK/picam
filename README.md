@@ -20,16 +20,15 @@ uploaded to Dropbox.
 
 ## Compatibility
 
-This software has been tested on Raspbian on a Raspberry Pi.
+This software has been tested on Raspbian on a Raspberry Pi with a logitec C720.
 
 ## Requirements
 
-- Motion (`apt-get install motion`)
-- ssmtp (`apt-get install ssmtp`)
-- mpack (`apt-get install mpack`)
-- [dropbox_uploader.sh](https://github.com/andreafabrizi/Dropbox-Uploader)
-  (or any other upload script)
- Executed by `picam_event` and `picam_supervise`.
+* Motion (`apt-get install motion`)
+* ssmtp (`apt-get install ssmtp`)
+* mpack (`apt-get install mpack`)
+* [dropbox_uploader.sh](https://github.com/andreafabrizi/Dropbox-Uploader)
+  (or any other upload script). Executed by `picam_event`.
 
 ## Components
 
