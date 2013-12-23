@@ -80,11 +80,11 @@ control() {
         /bin/rm "$TMPFILE"
     elif [[ $code2 == "4" ]]; then
         echo "Motion seems stopped. Sending warning."
-        echo "Motion seems stopped. This is a warning." > $TMPFILE
-        picam_notify --message $TMPFILE --subject "[motion] Warning. Motion software is stopped!. I will restart motion"
+        echo "Motion seems stopped. This is a warning.\nRestarting motion...\n" > $TMPFILE
+        service motion stop $>> $TMPFILE
+        service motion start $>> $TMPFILE
+        picam_notify --message $TMPFILE --subject "[motion] Warning. Motion not running."
         /bin/rm "$TMPFILE"
-        service motion stop
-        service motion start
     else
         echo_vvv "Keeping state $status"
     fi
