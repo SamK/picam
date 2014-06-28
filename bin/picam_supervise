@@ -3,6 +3,7 @@
 source /etc/picam.conf
 SCRIPTNAME=(basename $0)
 USER=$(id -u -n)
+SERVICE_MOTION=/usr/bin/service motion
 
 ##################
 # system functions
@@ -80,9 +81,11 @@ control() {
         /bin/rm "$TMPFILE"
     elif [[ $code2 == "4" ]]; then
         echo "Motion seems stopped. Sending warning."
-        echo "Motion seems stopped. This is a warning.\nRestarting motion...\n" > $TMPFILE
-        service motion stop $>> $TMPFILE
-        service motion start $>> $TMPFILE
+        echo "Motion seems stopped." > $TMPFILE
+        echo "Stopping motion..." >> $TMPFILE 2>&1
+        sudo $SERVICE_MOTION stop >> $TMPFILE 2>&1
+        echo "Starting motion..." >> $TMPFILE 2>&1
+        sudo $SERVICE_MOTION start >> $TMPFILE 2>&1
         picam_notify --message $TMPFILE --subject "[motion] Warning. Motion not running."
         /bin/rm "$TMPFILE"
     else

@@ -69,6 +69,11 @@ sudo cp ./picam/etc/picam.conf /etc/picam.conf
 sudo cp ./picam/etc/cron.d/picam /etc/cron.d/
 ```
 
+Edit /etc/sudoers with `visudo`
+```
+motion ALL=(ALL) NOPASSWD: /usr/sbin/service motion
+```
+
 It's time for some configuration.
 
 ### 3. Configure PiCam
