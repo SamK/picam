@@ -1,10 +1,6 @@
 # PiCam
 
-**WARNING: This project is under heavy developpment**
-
-> Note that this is a personal project.
-> It might not fit you at all.
-> It does not work well anyway and is sketchy.
+**:ghost: This project is not maintained anymore.**
 
 These scripts handle the events of the [Motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome) program.
 
